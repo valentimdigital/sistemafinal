@@ -1,9 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import Sidebar from './components/Sidebar';
 import Chat from './components/Chat';
 import InfoPanel from './components/InfoPanel';
 import Topbar from './components/Topbar';
 import { io } from 'socket.io-client';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomeMotivacional from './pages/HomeMotivacional';
+import VendaCadastro from './pages/VendaCadastro';
+import VendasLista from './pages/VendasLista';
+import Dashboard from './pages/Dashboard';
+import Discadora from './components/Discadora';
+import DiscadoraRelatorio from './components/DiscadoraRelatorio';
+import DiscadoraAdicionarCliente from './components/DiscadoraAdicionarCliente';
 
 // Atualizar a URL do backend para usar caminho relativo
 const socket = io('/', {
@@ -15,7 +23,13 @@ const socket = io('/', {
 // Expor socket globalmente para uso em outros componentes
 window.socket = socket;
 
-function App() {
+// Lazy loading para melhor performance
+const HomeMotivacionalLazy = lazy(() => import('./pages/HomeMotivacional'));
+const DashboardLazy = lazy(() => import('./pages/Dashboard'));
+const VendaLazy = lazy(() => import('./pages/VendaCadastro'));
+const ChatLazy = lazy(() => import('./pages/Chat'));
+
+function AtendimentoApp() {
   const [contatos, setContatos] = useState([]);
   const [contatoSelecionado, setContatoSelecionado] = useState(null);
   const [mensagens, setMensagens] = useState([]);
@@ -43,8 +57,14 @@ function App() {
   useEffect(() => {
     carregarContatos();
     socket.on('atualizar-contatos', carregarContatos);
+
+    // NOVO: ouvir evento customizado do botão/manual
+    const handleSidebarUpdate = () => carregarContatos();
+    window.addEventListener('atualizar-contatos-sidebar', handleSidebarUpdate);
+
     return () => {
       socket.off('atualizar-contatos', carregarContatos);
+      window.removeEventListener('atualizar-contatos-sidebar', handleSidebarUpdate);
     };
   }, []);
 
@@ -195,8 +215,17 @@ function App() {
   }, [contatoSelecionado]);
 
   return (
-    <div className="flex flex-col h-screen bg-[#F0F2F5]">
-      <Topbar atendente={atendente} setAtendente={setAtendente} />
+    <div className="flex flex-col h-screen bg-gradient-to-br from-[#181C2A] via-[#232946] to-[#181C2A]">
+      <Topbar
+        atendente={atendente}
+        setAtendente={setAtendente}
+        contatoSelecionado={contatoSelecionado}
+        onAtribuirAtendente={() => {
+          if (contatoSelecionado && atendente !== 'Todos') {
+            handleAtendenteChange(contatoSelecionado._id, atendente);
+          }
+        }}
+      />
       <div className="flex flex-1 min-h-0 h-full">
         {/* Sidebar: altura total */}
         <div className="hidden md:flex flex-col w-[360px] min-w-[320px] max-w-[400px] h-full bg-card">
@@ -218,6 +247,7 @@ function App() {
             qrCode={qrCode}
             connectionStatus={connectionStatus}
             atendente={atendente}
+            onAtendenteChange={handleAtendenteChange}
           />
         </div>
         {/* InfoPanel: largura fixa, sem ocupar espaço extra */}
@@ -226,6 +256,31 @@ function App() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Componente de loading
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#10121A] via-[#181C2A] to-[#0A0C13]">
+    <div className="text-white text-xl">Carregando...</div>
+  </div>
+);
+
+function App() {
+  return (
+    <Router>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<AtendimentoApp />} />
+          <Route path="/dashboard" element={<DashboardLazy />} />
+          <Route path="/venda" element={<VendaLazy />} />
+          <Route path="/home" element={<HomeMotivacionalLazy />} />
+          <Route path="/discadora/atendimento" element={<Discadora />} />
+          <Route path="/discadora/relatorio" element={<DiscadoraRelatorio />} />
+          <Route path="/discadora/adicionarcliente" element={<DiscadoraAdicionarCliente />} />
+        </Routes>
+      </Suspense>
+    </Router>
   );
 }
 

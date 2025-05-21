@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Atendimento Valentim Digital</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Substituindo FontAwesome por CDN mais confiável -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Atendimento Valentim Digital</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">Atendimento</a></li>
+                    <li><a href="relatorio.html">Relatório</a></li>
+                    <li><a href="adicionar.html">Adicionar Cliente</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <div class="card cliente-card">
+                <div class="card-header">
+                    <h2>Dados do Cliente</h2>
+                    <div class="filtro-container">
+                        <label for="filtroStatus">Filtrar:</label>
+                        <select id="filtroStatus" class="filtro-select">
+                            <option value="todos">Todos</option>
+                            <option value="nao-atendidos" selected>Não Atendidos</option>
+                            <option value="atendidos">Atendidos</option>
+                        </select>
+                    </div>
+                    <div class="navegacao">
+                        <button id="btnAnterior" class="btn btn-nav"><i class="fas fa-arrow-left"></i> Anterior</button>
+                        <span id="clienteAtual">1</span> / <span id="totalClientes">0</span>
+                        <button id="btnProximo" class="btn btn-nav">Próximo <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Status de atendimento -->
+                    <div id="statusAtendimento" class="status-atendimento nao-atendido">
+                        CLIENTE NÃO ATENDIDO
+                    </div>
+                    
+                    <!-- Destaque para o telefone -->
+                    <div class="telefone-destaque">
+                        <label>TELEFONE:</label>
+                        <p id="telefoneCliente">-</p>
+                    </div>
+
+                    <div class="cliente-info">
+                        <div class="info-row">
+                            <div class="info-group">
+                                <label>Nome:</label>
+                                <p id="nomeCliente">-</p>
+                            </div>
+                            <div class="info-group">
+                                <label>CNPJ:</label>
+                                <p id="cnpjCliente">-</p>
+                            </div>
+                            <div class="info-group">
+                                <label>Cidade:</label>
+                                <p id="cidadeCliente">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status-buttons">
+                        <div class="status-group">
+                            <label>Cliente atendeu?</label>
+                            <div class="toggle-buttons">
+                                <button id="btnAtendeuSim" class="btn btn-toggle">Sim</button>
+                                <button id="btnAtendeuNao" class="btn btn-toggle active">Não</button>
+                            </div>
+                        </div>
+                        <div class="status-group">
+                            <label>Cliente deu atenção?</label>
+                            <div class="toggle-buttons">
+                                <button id="btnAtencaoSim" class="btn btn-toggle">Sim</button>
+                                <button id="btnAtencaoNao" class="btn btn-toggle active">Não</button>
+                            </div>
+                        </div>
+                        <div class="status-group">
+                            <label>Possibilidade de fechamento?</label>
+                            <div class="toggle-buttons">
+                                <button id="btnFechamentoSim" class="btn btn-toggle">Sim</button>
+                                <button id="btnFechamentoNao" class="btn btn-toggle active">Não</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="observacoes">
+                        <label for="txtObservacoes">Observações:</label>
+                        <textarea id="txtObservacoes" rows="4" placeholder="Registre aqui suas observações sobre o atendimento..."></textarea>
+                    </div>
+
+                    <div class="actions">
+                        <button id="btnSalvar" class="btn btn-primary">Salvar Atendimento</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Sistema de Atendimento Valentim Digital</p>
+        </footer>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

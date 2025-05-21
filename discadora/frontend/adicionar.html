@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Atendimento Valentim Digital</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Substituindo FontAwesome por CDN mais confiável -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Atendimento Valentim Digital</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Atendimento</a></li>
+                    <li><a href="relatorio.html">Relatório</a></li>
+                    <li><a href="adicionar.html" class="active">Adicionar Cliente</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="card-header">
+                    <h2>Adicionar Novo Cliente</h2>
+                </div>
+                <div class="card-body">
+                    <form id="formAdicionarCliente">
+                        <div class="form-group">
+                            <label for="telefone">Telefone:</label>
+                            <input type="text" id="telefone" name="telefone" class="form-control" placeholder="Ex: 5511987654321" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nome">Nome:</label>
+                            <input type="text" id="nome" name="nome" class="form-control" placeholder="Nome da empresa ou cliente">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cnpj">CNPJ:</label>
+                            <input type="text" id="cnpj" name="cnpj" class="form-control" placeholder="Ex: 12.345.678/0001-90">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cidade">Cidade:</label>
+                            <input type="text" id="cidade" name="cidade" class="form-control" placeholder="Ex: São Paulo">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="observacoes">Observações Iniciais:</label>
+                            <textarea id="observacoes" name="observacoes" class="form-control" rows="4" placeholder="Informações iniciais sobre o cliente..."></textarea>
+                        </div>
+                        
+                        <div class="actions">
+                            <button type="submit" id="btnAdicionar" class="btn btn-primary">Adicionar Cliente</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Sistema de Atendimento Valentim Digital</p>
+        </footer>
+    </div>
+
+    <script src="js/adicionar.js"></script>
+</body>
+</html>

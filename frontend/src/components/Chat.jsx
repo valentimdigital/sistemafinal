@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaPaperPlane, FaPaperclip, FaSmile, FaMicrophone, FaRobot } from 'react-icons/fa';
+import { FaPaperPlane, FaPaperclip, FaSmile, FaMicrophone, FaRobot, FaTags, FaTimes } from 'react-icons/fa';
 import { QRCodeSVG } from 'qrcode.react';
+import TagSelector from './TagSelector';
 
 const ATENDENTES = [
   'Todos',
@@ -12,13 +13,31 @@ const ATENDENTES = [
   'Valentina (IA)'
 ];
 
+const TAGS = [
+  { label: 'Precisa do CNPJ', value: 'precisa_cnpj', color: '#f59e42' },
+  { label: 'Com dívida', value: 'com_divida', color: '#ef4444' },
+  { label: 'Com limite', value: 'com_limite', color: '#22c55e' },
+  { label: 'CNPJ', value: 'cnpj', color: '#2563eb' },
+  { label: 'PF', value: 'pf', color: '#a21caf' },
+  { label: 'Fibra', value: 'fibra', color: '#06b6d4' },
+  { label: 'Sem viabilidade', value: 'sem_viabilidade', color: '#64748b' },
+  { label: 'Com via', value: 'com_via', color: '#eab308' },
+];
+
 function Chat({ mensagens, onSend, contato, carregando, qrCode, connectionStatus, atendente, onAtendenteChange }) {
   const [novaMensagem, setNovaMensagem] = useState('');
+  const [tags, setTags] = useState(contato?.tags || []);
+  const [editandoTags, setEditandoTags] = useState(false);
   const messagesEndRef = useRef(null);
+  const tagSelectorRef = useRef();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [mensagens]);
+
+  useEffect(() => {
+    setTags(contato?.tags || []);
+  }, [contato]);
 
   const handleSend = (e) => {
     e.preventDefault();
@@ -53,6 +72,38 @@ function Chat({ mensagens, onSend, contato, carregando, qrCode, connectionStatus
     const novoAtendente = e.target.value;
     onAtendenteChange(contato._id, novoAtendente);
   };
+
+  // Salvar tags no backend
+  const handleTagsChange = async (newTags) => {
+    setTags(newTags);
+    if (!contato) return;
+    try {
+      await fetch(`/api/contatos/${contato._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tags: newTags })
+      });
+      // Atualizar contato selecionado imediatamente
+      window.dispatchEvent(new CustomEvent('atualizar-contato-selecionado', { detail: { ...contato, tags: newTags } }));
+    } catch (err) {
+      console.error('Erro ao salvar tags:', err);
+    }
+  };
+
+  // Fechar TagSelector ao clicar fora
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (tagSelectorRef.current && !tagSelectorRef.current.contains(event.target)) {
+        setEditandoTags(false);
+      }
+    }
+    if (editandoTags) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [editandoTags]);
 
   // Renderiza o QR Code quando necessário
   const renderQRCode = () => {
@@ -99,6 +150,39 @@ function Chat({ mensagens, onSend, contato, carregando, qrCode, connectionStatus
               <option key={nome} value={nome}>{nome}</option>
             ))}
           </select>
+        )}
+        {/* Badges de tags e botão para editar */}
+        {contato && (
+          <div className="ml-2 relative flex flex-col items-end max-w-[60vw]">
+            <div
+              className="flex gap-1 mb-1 w-full justify-end overflow-x-auto scrollbar-thin scrollbar-thumb-primaryLight scrollbar-track-transparent"
+              style={{ maxWidth: '60vw', whiteSpace: 'nowrap', paddingBottom: 2 }}
+            >
+              {tags.map(tag => {
+                const t = TAGS.find(t => t.value === tag);
+                return t ? (
+                  <span key={tag} style={{ background: t.color, color: '#fff', borderRadius: 8, padding: '2px 8px', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', display: 'inline-block' }}>{t.label}</span>
+                ) : null;
+              })}
+              <button
+                className="ml-1 p-1 rounded-full bg-white/20 hover:bg-white/40 text-primaryLight self-center"
+                title="Editar tags"
+                onClick={() => setEditandoTags(v => !v)}
+                style={{ minWidth: 32 }}
+              >
+                <FaTags />
+              </button>
+            </div>
+            {editandoTags && (
+              <div ref={tagSelectorRef} className="absolute z-50 top-10 right-0 bg-white rounded shadow-lg p-2 min-w-[200px]">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-bold text-primary text-sm">Editar tags</span>
+                  <button onClick={() => setEditandoTags(false)} className="text-gray-400 hover:text-red-500"><FaTimes /></button>
+                </div>
+                <TagSelector value={tags} onChange={handleTagsChange} />
+              </div>
+            )}
+          </div>
         )}
         {/* Ícones de ação - manter só o botão IA */}
         <div className="flex gap-3 text-white/80">
