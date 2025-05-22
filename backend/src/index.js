@@ -164,7 +164,7 @@ let isAIActive = false; // Estado global para controlar se a IA está ativa
 startWhatsApp();
 
 // Iniciar servidor
-server.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
   console.log(`Frontend URL: ${FRONTEND_URL}`);
 });
