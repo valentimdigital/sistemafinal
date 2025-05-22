@@ -5,7 +5,7 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: cd backend && npm install && npm run build
+    buildCommand: cd backend && npm install
     startCommand: cd backend && npm start
     envVars:
       - key: NODE_ENV
@@ -33,45 +33,40 @@ services:
   - type: web
     name: valentim-dashboard
     env: node
-    buildCommand: |
-      cd dashboard
-      npm install
-      npm install vite @vitejs/plugin-react
-      npm run build
+    region: oregon
+    plan: free
+    buildCommand: cd dashboard && npm install && npm run build
     startCommand: cd dashboard && npm run preview
     envVars:
-      - key: VITE_API_URL
-        value: https://valentim-backend.onrender.com
       - key: NODE_ENV
         value: production
+      - key: BACKEND_URL
+        value: https://atendimento-ia-backend.onrender.com
 
   # Discadora
   - type: web
     name: valentim-discadora
     env: node
-    buildCommand: |
-      cd discadora
-      npm install
-      npm install express mongoose cors dotenv
+    region: oregon
+    plan: free
+    buildCommand: cd discadora && npm install
     startCommand: cd discadora && npm start
     envVars:
-      - key: VITE_API_URL
-        value: https://valentim-backend.onrender.com
       - key: NODE_ENV
         value: production
+      - key: BACKEND_URL
+        value: https://atendimento-ia-backend.onrender.com
 
   # Home Portal
   - type: web
     name: valentim-portal
     env: node
-    buildCommand: |
-      cd home-portal
-      npm install
-      npm install vite @vitejs/plugin-react
-      npm run build
+    region: oregon
+    plan: free
+    buildCommand: cd home-portal && npm install && npm run build
     startCommand: cd home-portal && npm run preview
     envVars:
-      - key: VITE_API_URL
-        value: https://valentim-backend.onrender.com
       - key: NODE_ENV
-        value: production 
+        value: production
+      - key: BACKEND_URL
+        value: https://atendimento-ia-backend.onrender.com 

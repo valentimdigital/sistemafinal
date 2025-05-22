@@ -5,8 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "reset-db": "node src/scripts/reset-db.js",
+    "dev": "node src/index.js",
     "build": "echo 'Build completed'"
   },
   "keywords": [],
@@ -25,8 +24,7 @@
     "socket.io": "^4.7.4",
     "whatsapp-web.js": "^1.23.0"
   },
-  "devDependencies": {
-    "concurrently": "^8.2.2",
-    "nodemon": "^3.0.3"
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
