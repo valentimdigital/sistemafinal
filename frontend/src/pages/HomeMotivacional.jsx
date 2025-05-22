@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCache } from '../hooks/useCache';
 
 const FRASES = [
   'O sucesso é a soma de pequenos esforços repetidos todos os dias.',
@@ -35,21 +36,20 @@ function dicaAleatoria() {
 export default function HomeMotivacional() {
   const [frase, setFrase] = useState(fraseAleatoria());
   const [dica, setDica] = useState(dicaAleatoria());
-  const [ranking, setRanking] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch('/api/vendas/ranking')
-      .then(res => res.json())
-      .then(data => {
-        setRanking(data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Erro ao carregar ranking:', error);
-        setLoading(false);
-      });
-  }, []);
+  // Usar o hook de cache para o ranking
+  const { data: ranking, loading } = useCache(
+    'ranking_vendas',
+    async () => {
+      const response = await fetch('/api/vendas/ranking');
+      return response.json();
+    },
+    {
+      ttl: 5 * 60 * 1000, // 5 minutos
+      refreshInterval: 5 * 60 * 1000 // Atualiza a cada 5 minutos
+    }
+  );
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#10121A] via-[#181C2A] to-[#0A0C13] p-0">
@@ -78,7 +78,7 @@ export default function HomeMotivacional() {
             <h2 className="text-xl font-bold text-[#A8324A] mb-4 text-center">Ranking dos Vendedores</h2>
             {loading ? (
               <div className="text-white/90 text-center">Carregando ranking...</div>
-            ) : ranking.length === 0 ? (
+            ) : !ranking || ranking.length === 0 ? (
               <div className="text-white/90 text-center">Nenhuma venda registrada ainda.</div>
             ) : (
               <ol className="text-white/90 space-y-4">
@@ -101,9 +101,11 @@ export default function HomeMotivacional() {
             )}
           </div>
           <div className="flex flex-col gap-4 w-full">
-            <Link to="/" className="bg-[#A8324A] hover:bg-[#B22234] text-white px-6 py-3 rounded-lg font-bold shadow transition border border-[#B22234] text-center w-full">WhatsApp Chat</Link>
-            <Link to="/dashboard" className="bg-[#A8324A] hover:bg-[#B22234] text-white px-6 py-3 rounded-lg font-bold shadow transition border border-[#B22234] text-center w-full">Dashboard</Link>
-            <Link to="/venda" className="bg-[#A8324A] hover:bg-[#B22234] text-white px-6 py-3 rounded-lg font-bold shadow transition border border-[#B22234] text-center w-full">Venda</Link>
+            <button onClick={() => navigate('/')} className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">WhatsApp Chat</button>
+            <button onClick={() => navigate('/dashboard')} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Dashboard</button>
+            <button onClick={() => navigate('/venda')} className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Venda</button>
+            <button onClick={() => navigate('/discadora/atendimento')} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Discadora Atendimento</button>
+            <button onClick={() => navigate('/vendas')} className="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded">Vendas</button>
           </div>
         </div>
       </div>

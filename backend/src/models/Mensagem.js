@@ -12,8 +12,8 @@ const mensagemSchema = new mongoose.Schema({
   },
   status: { 
     type: String, 
-    enum: ['sent', 'delivered', 'read'], 
-    default: 'sent' 
+    enum: ['sending', 'sent', 'delivered', 'read', 'error', 'received'], 
+    default: 'sending' 
   },
   protocolo: { type: String },
   data: { type: Date, default: Date.now },
@@ -35,7 +35,22 @@ const mensagemSchema = new mongoose.Schema({
       timestamp: { type: Date, default: Date.now }
     }]
   }
-}, { timestamps: true });
+}, { 
+  timestamps: true,
+  versionKey: false 
+});
+
+// Adicionar índices para melhor performance
+mensagemSchema.index({ contato: 1, createdAt: -1 });
+mensagemSchema.index({ status: 1 });
+mensagemSchema.index({ de: 1, para: 1 });
+
+// Remover o modelo existente se houver
+try {
+  mongoose.model('Mensagem');
+} catch (e) {
+  // Modelo não existe, continuar
+}
 
 const Mensagem = mongoose.model('Mensagem', mensagemSchema);
 export default Mensagem; 

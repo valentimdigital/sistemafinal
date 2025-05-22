@@ -1,134 +1,167 @@
-# Painel de Atendimento WhatsApp com IA
+# Sistema de Atendimento Valentim Digital
 
-Um painel de atendimento que permite gerenciar conversas do WhatsApp através de uma interface web moderna, integrando inteligência artificial para automação de respostas e vendas de produtos TIM.
+Sistema completo de atendimento ao cliente, com discadora, dashboard e portal.
 
-## Funcionalidades
+## 🚀 Tecnologias
 
-- Conexão com WhatsApp via Baileys
-- Interface moderna com React e TailwindCSS
-- Chat em tempo real com IA (Valentina)
-- Lista de contatos e histórico de mensagens
-- Envio e recebimento de mensagens
-- QR Code para autenticação
-- Integração com MongoDB para persistência de dados
-- IA especializada em vendas TIM
+### Backend
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+- Socket.IO
+- Baileys (WhatsApp)
 
-## Requisitos
+### Frontend
+- React
+- Vite
+- Tailwind CSS
+- Axios
+- React Router
+- Chart.js
 
-- Node.js 14+
+## 📦 Estrutura do Projeto
+
+```
+├── backend/               # API Node.js + Express
+│   ├── models/           # Modelos MongoDB
+│   ├── routes/           # Rotas da API
+│   └── src/              # Código fonte do backend
+│
+├── frontend/             # Aplicação React
+│   ├── public/           # Arquivos estáticos
+│   └── src/              # Código fonte do frontend
+│
+├── dashboard/            # Dashboard administrativo
+│   ├── public/           # Arquivos estáticos
+│   └── src/              # Código fonte do dashboard
+│
+├── discadora/            # Sistema de discagem
+│   ├── frontend/         # Interface da discadora
+│   └── backend/          # API da discadora
+│
+└── home-portal/          # Portal do cliente
+    ├── public/           # Arquivos estáticos
+    └── src/              # Código fonte do portal
+```
+
+## 🛠️ Instalação
+
+### Pré-requisitos
+- Node.js 16+
+- MongoDB
 - NPM ou Yarn
-- MongoDB (opcional)
-- Chave de API para IA (Google Gemini ou similar)
 
-## Instalação
-
-1. Clone o repositório:
-```bash
-git clone [URL_DO_REPOSITORIO]
-cd whatsapp-panel
-```
-
-2. Instale as dependências do backend:
+### Backend
 ```bash
 cd backend
 npm install
-```
-
-3. Instale as dependências do frontend:
-```bash
-cd ../frontend
-npm install
-```
-
-## Executando o Projeto
-
-1. Inicie o backend:
-```bash
-cd backend
 npm start
 ```
 
-2. Em outro terminal, inicie o frontend:
+### Frontend
 ```bash
 cd frontend
+npm install
+npm run dev
+```
+
+### Dashboard
+```bash
+cd dashboard
+npm install
+npm run dev
+```
+
+### Discadora
+```bash
+cd discadora
+npm install
 npm start
 ```
 
-3. Acesse o painel em `http://localhost:3000`
-
-4. Escaneie o QR Code que aparecerá na tela para conectar ao WhatsApp
-
-## Tecnologias Utilizadas
-
-- Frontend:
-  - React
-  - TailwindCSS
-  - Socket.IO Client
-  - Heroicons
-
-- Backend:
-  - Node.js
-  - Express
-  - Baileys (WhatsApp API)
-  - Socket.IO
-  - MongoDB (opcional)
-  - Google Gemini API (IA)
-
-## Estrutura do Projeto
-
-```
-/ATENDIMENTOIAIAIAIA
-│
-├── backend
-│   ├── src/
-│   │   ├── index.js           # Inicialização do servidor Express, integração com WhatsApp e Socket.IO
-│   │   ├── ai-config.js       # Configuração e prompt da IA Valentina
-│   │   ├── gemini-service.js  # Serviço de integração com IA
-│   │   ├── config/
-│   │   │   └── database.js    # Configuração MongoDB
-│   │   ├── models/
-│   │   │   ├── Contato.js     # Modelo de dados para contatos
-│   │   │   └── Mensagem.js    # Modelo de dados para mensagens
-│   │   └── routes/
-│   │       ├── contatos.js    # Rotas para CRUD de contatos
-│   │       └── mensagens.js   # Rotas para CRUD de mensagens
-│   └── package.json
-│
-└── frontend
-    ├── src/
-    │   ├── App.jsx            # Componente principal
-    │   ├── main.jsx           # Ponto de entrada
-    │   ├── index.css          # Estilos globais
-    │   └── components/
-    │       ├── Chat.jsx       # Componente de chat
-    │       ├── Sidebar.jsx    # Barra lateral
-    │       └── InfoPanel.jsx  # Painel de informações
-    └── package.json
+### Home Portal
+```bash
+cd home-portal
+npm install
+npm run dev
 ```
 
-## Funcionalidades da IA (Valentina)
+## 🌟 Funcionalidades
 
-A IA Valentina é configurada para atuar como secretária executiva especializada em vendas TIM, com as seguintes características:
+### Sistema de Atendimento
+- Chat em tempo real
+- Integração com WhatsApp
+- Histórico de atendimentos
+- Análise de sentimento
+- Dashboard de métricas
 
-- Personalidade profissional e objetiva
-- Foco em entender necessidades do cliente
-- Especialista em produtos TIM:
-  - TIM BLACK EMPRESA
-  - TIM OFFICE
-  - TIM EMPRESA INTERNET
-  - LIBERTY WEB EMPRESA
-  - M2M (Machine-to-Machine)
-- Estratégia de vendas personalizada
-- Respostas automáticas contextualizadas
+### Discadora
+- Cadastro de clientes
+- Discagem automática
+- Relatórios de atendimento
+- Gestão de status
+- Histórico de chamadas
 
-## Contribuição
+### Dashboard
+- Métricas em tempo real
+- Gráficos de desempenho
+- Análise de atendimentos
+- Relatórios exportáveis
+- Gestão de usuários
 
-1. Faça um fork do projeto
+### Portal do Cliente
+- Área do cliente
+- Histórico de atendimentos
+- Suporte online
+- Documentos e contratos
+
+## 🔧 Configuração
+
+### MongoDB
+```javascript
+// backend/server.js
+mongoose.connect('mongodb://localhost:27017/valentim_digital', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+```
+
+### WhatsApp (Baileys)
+```javascript
+// backend/src/whatsapp.js
+const { default: makeWASocket } = require('@whiskeysockets/baileys');
+```
+
+## 📊 Rotas da API
+
+### Atendimentos
+- `GET /api/atendimentos` - Lista todos os atendimentos
+- `POST /api/atendimentos` - Cria novo atendimento
+- `GET /api/atendimentos/:id` - Busca atendimento por ID
+
+### Discadora
+- `GET /api/discadora/clientes` - Lista todos os clientes
+- `POST /api/discadora/clientes` - Adiciona novo cliente
+- `PATCH /api/discadora/clientes/:id` - Atualiza cliente
+- `DELETE /api/discadora/clientes/:id` - Remove cliente
+
+## 🤝 Contribuição
+
+1. Faça o fork do projeto
 2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
 3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
-## Licença
+## 📝 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes. 
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 📞 Suporte
+
+Para suporte, envie um email para suporte@valentimdigital.com.br ou abra uma issue no GitHub.
+
+---
+
+Desenvolvido com ❤️ por Valentim Digital 

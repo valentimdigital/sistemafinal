@@ -21,6 +21,12 @@ function App() {
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
+        <button
+          onClick={() => window.location.href = 'http://localhost:3000/discadora'}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Ir para Discadora
+        </button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>

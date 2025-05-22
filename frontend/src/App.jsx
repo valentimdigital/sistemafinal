@@ -27,7 +27,11 @@ window.socket = socket;
 const HomeMotivacionalLazy = lazy(() => import('./pages/HomeMotivacional'));
 const DashboardLazy = lazy(() => import('./pages/Dashboard'));
 const VendaLazy = lazy(() => import('./pages/VendaCadastro'));
+const VendasListaLazy = lazy(() => import('./pages/VendasLista'));
 const ChatLazy = lazy(() => import('./pages/Chat'));
+const DiscadoraLazy = lazy(() => import('./components/Discadora'));
+const DiscadoraRelatorioLazy = lazy(() => import('./components/DiscadoraRelatorio'));
+const DiscadoraAdicionarClienteLazy = lazy(() => import('./components/DiscadoraAdicionarCliente'));
 
 function AtendimentoApp() {
   const [contatos, setContatos] = useState([]);
@@ -274,10 +278,11 @@ function App() {
           <Route path="/" element={<AtendimentoApp />} />
           <Route path="/dashboard" element={<DashboardLazy />} />
           <Route path="/venda" element={<VendaLazy />} />
+          <Route path="/vendas" element={<VendasListaLazy />} />
           <Route path="/home" element={<HomeMotivacionalLazy />} />
-          <Route path="/discadora/atendimento" element={<Discadora />} />
-          <Route path="/discadora/relatorio" element={<DiscadoraRelatorio />} />
-          <Route path="/discadora/adicionarcliente" element={<DiscadoraAdicionarCliente />} />
+          <Route path="/discadora/atendimento" element={<DiscadoraLazy />} />
+          <Route path="/discadora/relatorio" element={<DiscadoraRelatorioLazy />} />
+          <Route path="/discadora/adicionarcliente" element={<DiscadoraAdicionarClienteLazy />} />
         </Routes>
       </Suspense>
     </Router>

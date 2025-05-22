@@ -16,7 +16,7 @@ import { makeWASocket, useMultiFileAuthState } from '@whiskeysockets/baileys';
 import qrcode from 'qrcode-terminal';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { startWhatsApp } from './whatsapp.js';
+import { startWhatsApp, getGlobalSock } from './whatsapp.js';
 
 // Descobrir o caminho absoluto da raiz do projeto
 const __filename = fileURLToPath(import.meta.url);
@@ -31,9 +31,14 @@ const httpServer = createServer(app);
 // Configurações de performance
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Configuração do CORS
+const PORT = process.env.PORT || 3001;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3002'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  origin: [FRONTEND_URL, 'http://localhost:3000', 'http://localhost:3001'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
 
@@ -63,13 +68,19 @@ app.use('/api/analise', analiseRoutes);
 // Socket.IO com configurações otimizadas
 const io = new Server(httpServer, {
   cors: {
-    origin: ['http://localhost:3000', 'http://localhost:3002'],
+    origin: [FRONTEND_URL, 'http://localhost:3000', 'http://localhost:3001'],
     methods: ['GET', 'POST'],
     credentials: true
   },
   pingTimeout: 60000,
   pingInterval: 25000,
-  transports: ['websocket', 'polling']
+  transports: ['websocket', 'polling'],
+  maxHttpBufferSize: 100 * 1024 * 1024,
+  connectTimeout: 45000,
+  allowEIO3: true,
+  perMessageDeflate: {
+    threshold: 2048
+  }
 });
 
 // Gerenciamento de conexões Socket.IO
@@ -84,15 +95,48 @@ io.on('connection', (socket) => {
     console.log(`Cliente desconectado: ${socket.id}`);
   });
 
-  // Exemplo de evento para processar mensagens via Socket.IO
+  // Evento para processar mensagens via Socket.IO
   socket.on('message', async (data) => {
     console.log('Mensagem recebida:', data);
     try {
+      if (!isAIActive) {
+        console.log('IA está desativada, ignorando mensagem');
+        socket.emit('response', { 
+          error: 'IA está desativada',
+          isActive: false 
+        });
+        return;
+      }
+
       const response = await getAIResponse(data.message);
-      socket.emit('response', { response });
+      
+      // Salvar mensagem da IA no banco
+      const mensagem = new Mensagem({
+        contato: data.contatoId,
+        de: 'IA',
+        para: data.contatoNumero,
+        conteudo: response,
+        tipo: 'text',
+        status: 'sent'
+      });
+      await mensagem.save();
+
+      // Emitir para todos os clientes
+      io.emit('nova-mensagem', { 
+        contatoId: data.contatoId,
+        mensagem 
+      });
+
+      socket.emit('response', { 
+        response,
+        isActive: true 
+      });
     } catch (error) {
       console.error('Erro ao processar mensagem:', error);
-      socket.emit('error', { error: 'Erro ao processar a mensagem' });
+      socket.emit('error', { 
+        error: 'Erro ao processar a mensagem',
+        isActive: isAIActive 
+      });
     }
   });
 
@@ -114,14 +158,70 @@ io.on('connection', (socket) => {
 });
 
 let globalSock = null;
+let isAIActive = false; // Estado global para controlar se a IA está ativa
 
 // Iniciar WhatsApp
 startWhatsApp();
 
 // Iniciar servidor
-const PORT = process.env.PORT || 3001;
-httpServer.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Frontend URL: ${FRONTEND_URL}`);
 });
 
-export { globalSock, io }; 
+// Adicionar rota para controlar o estado da IA
+app.post('/api/ia/toggle', (req, res) => {
+  isAIActive = !isAIActive;
+  console.log('Estado da IA alterado:', isAIActive);
+  io.emit('ia-status-changed', { isActive: isAIActive });
+  res.json({ isActive: isAIActive });
+});
+
+app.get('/api/ia/status', (req, res) => {
+  res.json({ isActive: isAIActive });
+});
+
+// Cache para mensagens
+const mensagensCache = new Map();
+
+// Rota otimizada para buscar mensagens
+app.get('/api/mensagens/:contatoId', async (req, res) => {
+  const { contatoId } = req.params;
+  
+  // Verificar cache
+  if (mensagensCache.has(contatoId)) {
+    const cachedData = mensagensCache.get(contatoId);
+    if (Date.now() - cachedData.timestamp < 30000) { // 30 segundos
+      return res.json(cachedData.mensagens);
+    }
+  }
+
+  try {
+    const mensagens = await Mensagem.find({ contato: contatoId })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    // Atualizar cache
+    mensagensCache.set(contatoId, {
+      mensagens,
+      timestamp: Date.now()
+    });
+
+    res.json(mensagens);
+  } catch (error) {
+    console.error('Erro ao buscar mensagens:', error);
+    res.status(500).json({ error: 'Erro ao buscar mensagens' });
+  }
+});
+
+// Limpar cache periodicamente
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of mensagensCache.entries()) {
+    if (now - value.timestamp > 300000) { // 5 minutos
+      mensagensCache.delete(key);
+    }
+  }
+}, 300000);
+
+export { io, isAIActive }; 

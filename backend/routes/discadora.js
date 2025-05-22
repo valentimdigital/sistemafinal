@@ -1,14 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const ClienteDiscadora = require('../models/ClienteDiscadora');
-const auth = require('../middleware/auth');
 
 // Listar todos os clientes
-router.get('/clientes', auth, async (req, res) => {
+router.get('/clientes', async (req, res) => {
   try {
-    const clientes = await ClienteDiscadora.find()
-      .populate('atendente', 'nome')
-      .sort({ dataCadastro: -1 });
+    const clientes = await ClienteDiscadora.find();
     res.json(clientes);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -16,7 +13,7 @@ router.get('/clientes', auth, async (req, res) => {
 });
 
 // Buscar cliente por ID
-router.get('/clientes/:id', auth, async (req, res) => {
+router.get('/clientes/:id', async (req, res) => {
   try {
     const cliente = await ClienteDiscadora.findById(req.params.id)
       .populate('atendente', 'nome')
@@ -30,15 +27,9 @@ router.get('/clientes/:id', auth, async (req, res) => {
   }
 });
 
-// Criar novo cliente
-router.post('/clientes', auth, async (req, res) => {
-  const cliente = new ClienteDiscadora({
-    nome: req.body.nome,
-    telefone: req.body.telefone,
-    observacoes: req.body.observacoes,
-    atendente: req.user._id
-  });
-
+// Adicionar novo cliente
+router.post('/clientes', async (req, res) => {
+  const cliente = new ClienteDiscadora(req.body);
   try {
     const novoCliente = await cliente.save();
     res.status(201).json(novoCliente);
@@ -48,29 +39,12 @@ router.post('/clientes', auth, async (req, res) => {
 });
 
 // Atualizar cliente
-router.patch('/clientes/:id', auth, async (req, res) => {
+router.patch('/clientes/:id', async (req, res) => {
   try {
     const cliente = await ClienteDiscadora.findById(req.params.id);
-    if (!cliente) {
-      return res.status(404).json({ message: 'Cliente não encontrado' });
-    }
-
-    // Atualiza campos básicos
-    if (req.body.nome) cliente.nome = req.body.nome;
-    if (req.body.telefone) cliente.telefone = req.body.telefone;
-    if (req.body.observacoes) cliente.observacoes = req.body.observacoes;
-    if (req.body.status) cliente.status = req.body.status;
-
-    // Adiciona ao histórico se houver mudança de status
-    if (req.body.status && req.body.status !== cliente.status) {
-      cliente.historicoAtendimentos.push({
-        status: req.body.status,
-        observacao: req.body.observacao || 'Status atualizado',
-        atendente: req.user._id
-      });
-    }
-
-    cliente.ultimaAtualizacao = Date.now();
+    if (!cliente) return res.status(404).json({ message: 'Cliente não encontrado' });
+    
+    Object.assign(cliente, req.body);
     const clienteAtualizado = await cliente.save();
     res.json(clienteAtualizado);
   } catch (error) {
@@ -79,21 +53,20 @@ router.patch('/clientes/:id', auth, async (req, res) => {
 });
 
 // Deletar cliente
-router.delete('/clientes/:id', auth, async (req, res) => {
+router.delete('/clientes/:id', async (req, res) => {
   try {
     const cliente = await ClienteDiscadora.findById(req.params.id);
-    if (!cliente) {
-      return res.status(404).json({ message: 'Cliente não encontrado' });
-    }
-    await cliente.remove();
-    res.json({ message: 'Cliente removido com sucesso' });
+    if (!cliente) return res.status(404).json({ message: 'Cliente não encontrado' });
+    
+    await cliente.deleteOne();
+    res.json({ message: 'Cliente deletado com sucesso' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
 // Buscar clientes por status
-router.get('/clientes/status/:status', auth, async (req, res) => {
+router.get('/clientes/status/:status', async (req, res) => {
   try {
     const clientes = await ClienteDiscadora.find({ status: req.params.status })
       .populate('atendente', 'nome')
