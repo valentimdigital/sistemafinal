@@ -1,0 +1,72 @@
+services:
+  # Backend API
+  - type: web
+    name: atendimento-ia-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        value: https://atendimento-ia-frontend.onrender.com
+      - key: MONGODB_URI
+        sync: false
+
+  # Frontend
+  - type: web
+    name: atendimento-ia-frontend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm run preview
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BACKEND_URL
+        value: https://atendimento-ia-backend.onrender.com
+
+  # Dashboard
+  - type: web
+    name: valentim-dashboard
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd dashboard && npm install && npm run build
+    startCommand: cd dashboard && npm run preview
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BACKEND_URL
+        value: https://atendimento-ia-backend.onrender.com
+
+  # Discadora
+  - type: web
+    name: valentim-discadora
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd discadora && npm install
+    startCommand: cd discadora && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BACKEND_URL
+        value: https://atendimento-ia-backend.onrender.com
+
+  # Home Portal
+  - type: web
+    name: valentim-portal
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd home-portal && npm install && npm run build
+    startCommand: cd home-portal && npm run preview
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BACKEND_URL
+        value: https://atendimento-ia-backend.onrender.com 
