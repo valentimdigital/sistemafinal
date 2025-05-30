@@ -76,8 +76,8 @@ services:
     name: sistemafinal
     env: node
     branch: master
-    buildCommand: cd final && npm install
-    startCommand: cd final && npm start
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
