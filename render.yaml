@@ -71,19 +71,21 @@ services:
       - key: BACKEND_URL
         value: https://atendimento-ia-backend.onrender.com
 
-  # Sistema Final
+  # Sistema Final - Produção
   - type: web
     name: sistemafinal
     env: node
     branch: master
-    rootDirectory: ./MODELO/backend
-    buildCommand: npm install
-    startCommand: node server.js
+    rootDirectory: final
+    buildCommand: cd MODELO/backend && npm install
+    startCommand: cd MODELO/backend && node server.js
     envVars:
       - key: NODE_ENV
         value: production
       - key: MONGODB_URI
         value: mongodb+srv://valentina:Q3zbZeyl9uBEBXSa@valentina.gdcrr.mongodb.net/valentina
+      - key: PORT
+        value: "10000"
     plan: free
     region: oregon
     autoDeploy: true 

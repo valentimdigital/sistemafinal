@@ -1,0 +1,12 @@
+{
+  "name": "sistemafinal-production",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "cd ../MODELO/backend && node server.js",
+    "build": "cd ../MODELO/backend && npm install"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+} 
