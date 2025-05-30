@@ -77,8 +77,8 @@ services:
     env: node
     branch: master
     rootDirectory: final
-    buildCommand: cd MODELO/backend && npm install
-    startCommand: cd MODELO/backend && node server.js
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
