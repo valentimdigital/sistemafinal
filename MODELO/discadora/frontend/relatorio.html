@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Atendimento Valentim Digital</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Atendimento Valentim Digital</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Atendimento</a></li>
+                    <li><a href="relatorio.html" class="active">Relatório</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <div class="card relatorio-card">
+                <div class="card-header">
+                    <h2>Relatório de Atendimentos</h2>
+                    <div class="filtros">
+                        <input type="text" id="txtBusca" placeholder="Buscar por nome, telefone ou CNPJ...">
+                        <button id="btnBuscar" class="btn btn-secondary">Buscar</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tabelaRelatorio">
+                            <thead>
+                                <tr>
+                                    <th>Telefone</th>
+                                    <th>Nome</th>
+                                    <th>CNPJ</th>
+                                    <th>Cidade</th>
+                                    <th>Atendeu?</th>
+                                    <th>Deu atenção?</th>
+                                    <th>Fechamento?</th>
+                                    <th>Observações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corpoTabela">
+                                <!-- Dados serão carregados via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="semRegistros" class="sem-registros hidden">
+                        <p>Nenhum registro de atendimento encontrado.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Sistema de Atendimento Valentim Digital</p>
+        </footer>
+    </div>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="js/relatorio.js"></script>
+</body>
+</html>

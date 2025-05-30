@@ -46,8 +46,8 @@ export default function HomeMotivacional() {
       return response.json();
     },
     {
-      ttl: 5 * 60 * 1000, // 5 minutos
-      refreshInterval: 5 * 60 * 1000 // Atualiza a cada 5 minutos
+      ttl: 30 * 1000, // 30 segundos
+      refreshInterval: 30 * 1000 // Atualiza a cada 30 segundos
     }
   );
 

@@ -12,6 +12,7 @@ const {
 
 import P from 'pino';
 import dotenv from 'dotenv';
+import { configurarRelatoriosAutomaticos } from './src/utils/relatoriosAutomaticos.js';
 dotenv.config();
 
 const app = express();
@@ -20,8 +21,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// String de conexão do MongoDB
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://valentina:Q3zbZeyl9uBEBXSa@valentina.gdcrr.mongodb.net/?retryWrites=true&w=majority&appName=valentina';
+
 // Conexão com MongoDB Atlas
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('✅ Conectado ao MongoDB Atlas');
   })
@@ -47,6 +51,21 @@ const startWhatsApp = async () => {
 };
 
 const sock = await startWhatsApp();
+
+// Configurar relatórios automáticos
+configurarRelatoriosAutomaticos(async (destinatario, mensagem) => {
+    try {
+        if (!destinatario) {
+            console.error('❌ Destinatário não fornecido');
+            return;
+        }
+        
+        await sock.sendMessage(destinatario, { text: mensagem });
+        console.log('✅ Relatório enviado com sucesso para:', destinatario);
+    } catch (error) {
+        console.error('❌ Erro ao enviar relatório:', error);
+    }
+});
 
 // Rotas
 app.use('/api/auth', require('./routes/auth'));
