@@ -76,8 +76,9 @@ services:
     name: sistemafinal
     env: node
     branch: master
-    buildCommand: yarn
-    startCommand: yarn start
+    rootDirectory: MODELO/backend
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production

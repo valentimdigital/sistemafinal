@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "cd MODELO/backend && npm start",
-    "build": "cd MODELO/backend && npm install",
-    "postinstall": "cd MODELO/backend && npm install"
+    "start": "npm start",
+    "build": "npm install"
   },
   "engines": {
     "node": ">=16.0.0"
