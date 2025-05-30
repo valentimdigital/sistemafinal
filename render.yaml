@@ -69,4 +69,20 @@ services:
       - key: NODE_ENV
         value: production
       - key: BACKEND_URL
-        value: https://atendimento-ia-backend.onrender.com 
+        value: https://atendimento-ia-backend.onrender.com
+
+  # Sistema Final
+  - type: web
+    name: sistemafinal
+    env: node
+    branch: master
+    buildCommand: yarn
+    startCommand: yarn start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        value: mongodb+srv://valentina:Q3zbZeyl9uBEBXSa@valentina.gdcrr.mongodb.net/valentina
+    plan: free
+    region: oregon
+    autoDeploy: true 
